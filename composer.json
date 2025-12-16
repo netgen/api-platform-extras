@@ -14,5 +14,24 @@
             "email": "jakov@netgen.io"
         }
     ],
-    "require": {}
+    "require": {
+        "php": ">=8.2",
+        "symfony/config": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/event-dispatcher": "^7.4",
+        "symfony/http-foundation": "^7.4",
+        "symfony/http-kernel": "^7.4",
+        "symfony/property-access": "^7.4",
+        "symfony/framework-bundle": "^7.4",
+        "symfony/console": "^7.4",
+        "symfony/security-core": "^7.4",
+        "symfony/security-http": "^7.4",
+        "api-platform/symfony": "^4.2",
+        "api-platform/doctrine-orm": "^4.2",
+        "lexik/jwt-authentication-bundle": "^3.1",
+        "gesdinet/jwt-refresh-token-bundle": "^1.5"
+    },
+    "require-dev": {
+        "php-cs-fixer/shim": "^3.92"
+    }
 }
