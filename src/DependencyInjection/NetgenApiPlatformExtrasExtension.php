@@ -13,7 +13,7 @@ use function is_array;
 class NetgenApiPlatformExtrasExtension extends Extension
 {
     /**
-     * @param array<int, array<string, mixed>> $configs
+     * @param mixed[] $configs
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
