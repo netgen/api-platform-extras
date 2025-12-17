@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras;
 
+use Netgen\ApiPlatformExtras\Command\GenerateIriTemplatesCommand;
+use Netgen\ApiPlatformExtras\Service\IriTemplatesService;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -29,12 +31,20 @@ class ApiPlatformExtrasBundle extends AbstractBundle
                 ->arrayNode('jwt_refresh')
                     ->canBeDisabled()
                 ->end()
+                ->arrayNode('iri_template_generator')
+                    ->canBeDisabled()
+                ->end()
             ->end()
         ->end();
     }
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
+        $services = $container->services()
+            ->defaults()
+            ->autowire()
+            ->autoconfigure();
+
         if (($config['http_cache']['enabled'] ?? false) === true) {
             // #TODO build http cache services
         }
@@ -49,6 +59,11 @@ class ApiPlatformExtrasBundle extends AbstractBundle
 
         if (($config['jwt_refresh']['enabled'] ?? false) === true) {
             // #TODO build jwt refresh services
+        }
+
+        if (($config['iri_template_generator']['enabled'] ?? false) === true) {
+            $services->set(IriTemplatesService::class)->public();
+            $services->set(GenerateIriTemplatesCommand::class)->public();
         }
     }
 }
