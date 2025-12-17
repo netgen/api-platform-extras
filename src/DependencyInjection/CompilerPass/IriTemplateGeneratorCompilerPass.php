@@ -17,15 +17,24 @@ final class IriTemplateGeneratorCompilerPass extends FeatureCompilerPass
             return;
         }
 
-        $container->setDefinition(IriTemplatesService::class, new Definition(IriTemplatesService::class))
+        $container
+            ->setDefinition(
+                IriTemplatesService::class,
+                new Definition(IriTemplatesService::class),
+            )
             ->setAutowired(true)
             ->setPublic(true);
 
-        $container->setDefinition(GenerateIriTemplatesCommand::class, new Definition(GenerateIriTemplatesCommand::class))
+        $container
+            ->setDefinition(
+                GenerateIriTemplatesCommand::class,
+                new Definition(GenerateIriTemplatesCommand::class),
+            )
             ->addTag(
                 'console.command',
                 [
-                    'name' => 'api-platform-extras:generate-iri-templates', 'description' => 'Generate IRI templates and write them to a JSON file',
+                    'name' => 'api-platform-extras:generate-iri-templates',
+                    'description' => 'Generate IRI templates and write them to a JSON file',
                 ],
             )
             ->setAutowired(true)
