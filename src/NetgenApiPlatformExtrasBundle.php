@@ -6,4 +6,4 @@ namespace Netgen\ApiPlatformExtras;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class NetgenApiPlatformExtrasBundle extends Bundle {}
+final class NetgenApiPlatformExtrasBundle extends Bundle {}

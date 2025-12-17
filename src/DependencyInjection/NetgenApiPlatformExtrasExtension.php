@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 
 use function is_array;
 
-class NetgenApiPlatformExtrasExtension extends Extension
+final class NetgenApiPlatformExtrasExtension extends Extension
 {
     /**
      * @param mixed[] $configs
