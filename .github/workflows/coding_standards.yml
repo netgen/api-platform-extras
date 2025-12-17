@@ -20,4 +20,4 @@ jobs:
           path: vendor/netgen/coding-standard
       - uses: docker://oskarstark/php-cs-fixer-ga
         with:
-          args: --diff --dry-run
+          args: --diff --dry-run --allow-unsupported-php-version=yes
