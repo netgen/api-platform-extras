@@ -8,6 +8,8 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
+use function is_array;
+
 class NetgenApiPlatformExtrasExtension extends Extension
 {
     /**
@@ -17,26 +19,7 @@ class NetgenApiPlatformExtrasExtension extends Extension
     {
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
-
-        if (($config['http_cache']['enabled'] ?? false) === true) {
-            // TODO: register http cache related services
-        }
-
-        if (($config['schema_decoration']['enabled'] ?? false) === true) {
-            // TODO: register schema decoration related services
-        }
-
-        if (($config['simple_normalizer']['enabled'] ?? false) === true) {
-            // TODO: register simple normalizer related services
-        }
-
-        if (($config['jwt_refresh']['enabled'] ?? false) === true) {
-            // TODO: register JWT refresh related services
-        }
-
-        if (($config['iri_template_generator']['enabled'] ?? false) === true) {
-            // TODO: register iri templates generator related services
-        }
+        $this->setParameters($container, $config, $this->getAlias());
     }
 
     /**
@@ -45,5 +28,24 @@ class NetgenApiPlatformExtrasExtension extends Extension
     public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface
     {
         return new Configuration($this);
+    }
+
+    /**
+     * @param mixed[] $config
+     */
+    private function setParameters(
+        ContainerBuilder $container,
+        array $config,
+        string $alias,
+    ): void {
+        foreach ($config as $key => $value) {
+            $paramName = "{$alias}.{$key}";
+
+            if (is_array($value)) {
+                $this->setParameters($container, $value, $paramName);
+            } else {
+                $container->setParameter($paramName, $value);
+            }
+        }
     }
 }
