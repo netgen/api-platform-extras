@@ -33,6 +33,10 @@
         "gesdinet/jwt-refresh-token-bundle": "^1.5"
     },
     "require-dev": {
-        "php-cs-fixer/shim": "^3.92"
+        "php-cs-fixer/shim": "^3.92",
+        "phpstan/phpstan": "^2.1"
+    },
+    "scripts": {
+        "phpstan": "@php vendor/bin/phpstan analyse -c phpstan.neon --level=8 --ansi lib bundle"
     }
 }
