@@ -12,8 +12,14 @@
         {
             "name": "Jakov Knezovic",
             "email": "jakov@netgen.io"
+        },
+        {
+            "name": "Edi Modrić",
+            "email": "edi.modric@gmail.com"
         }
     ],
+    "prefer-stable": true,
+    "minimum-stability": "beta",
     "require": {
         "php": ">=8.2",
         "symfony/routing": "^7.4 || ^8.0",
@@ -30,7 +36,7 @@
         "api-platform/symfony": "^4.2",
         "api-platform/doctrine-orm": "^4.2",
         "lexik/jwt-authentication-bundle": "^3.1",
-        "gesdinet/jwt-refresh-token-bundle": "^1.5"
+        "gesdinet/jwt-refresh-token-bundle": "^1.5 | ^2.0"
     },
     "require-dev": {
         "php-cs-fixer/shim": "^3.92",
