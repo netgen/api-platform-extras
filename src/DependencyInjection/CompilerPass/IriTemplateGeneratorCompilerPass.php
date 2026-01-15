@@ -9,10 +9,11 @@ use Netgen\ApiPlatformExtras\Service\IriTemplatesService;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 final class IriTemplateGeneratorCompilerPass implements CompilerPassInterface
 {
-    private const FEATURE_ENABLED_PARAMETER = 'netgen_api_platform_extras.features.iri_template_generator.enabled';
+    private const string FEATURE_ENABLED_PARAMETER = 'netgen_api_platform_extras.features.iri_template_generator.enabled';
 
     public function process(ContainerBuilder $container): void
     {
@@ -28,20 +29,23 @@ final class IriTemplateGeneratorCompilerPass implements CompilerPassInterface
                 IriTemplatesService::class,
                 new Definition(IriTemplatesService::class),
             )
-            ->setAutowired(true);
+            ->setArguments([
+                new Reference('api_platform.metadata.resource.metadata_collection_factory.cached'),
+                new Reference('api_platform.metadata.resource.name_collection_factory.cached'),
+                new Reference('router'),
+            ]);
 
         $container
             ->setDefinition(
                 GenerateIriTemplatesCommand::class,
                 new Definition(GenerateIriTemplatesCommand::class),
             )
-            ->addTag(
-                'console.command',
+            ->addTag('console.command')
+            ->setArguments(
                 [
-                    'name' => 'api-platform-extras:generate-iri-templates',
-                    'description' => 'Generate IRI templates and write them to a JSON file',
+                    new Reference(IriTemplatesService::class),
+                    new Reference('filesystem'),
                 ],
-            )
-            ->setAutowired(true);
+            );
     }
 }

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras\Command;
 
+use Exception;
+use JsonException;
 use Netgen\ApiPlatformExtras\Service\IriTemplatesService;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,17 +22,13 @@ use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 
-#[AsCommand(
-    name: 'api-platform-extras:generate-iri-templates',
-    description: 'Generate IRI templates and write them to a JSON file',
-)]
 final class GenerateIriTemplatesCommand extends Command
 {
     public function __construct(
         private readonly IriTemplatesService $iriTemplatesService,
         private readonly Filesystem $filesystem,
     ) {
-        parent::__construct();
+        parent::__construct('netgen:api-platform-extras:generate-iri-templates');
     }
 
     protected function configure(): void
@@ -42,6 +39,7 @@ final class GenerateIriTemplatesCommand extends Command
                 InputArgument::REQUIRED,
                 'The output JSON file path',
             )
+            ->setDescription('Generate IRI templates and write them to a JSON file')
             ->setHelp(
                 <<<'HELP'
                 The <info>%command.name%</info> command generates IRI templates from all API Platform resources
@@ -60,7 +58,7 @@ final class GenerateIriTemplatesCommand extends Command
 
         try {
             $iriTemplates = $this->iriTemplatesService->getIriTemplatesData();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error(sprintf('Failed to generate IRI templates: %s', $e->getMessage()));
 
             return Command::FAILURE;
@@ -70,7 +68,7 @@ final class GenerateIriTemplatesCommand extends Command
 
         try {
             $content = json_encode($iriTemplates, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        } catch (\JsonException) {
+        } catch (JsonException) {
         }
 
         if ($content === false) {
@@ -85,7 +83,7 @@ final class GenerateIriTemplatesCommand extends Command
             $io->info(sprintf('Generated %d IRI templates', count($iriTemplates)));
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $io->error(sprintf('Failed to write file: %s', $e->getMessage()));
 
             return Command::FAILURE;

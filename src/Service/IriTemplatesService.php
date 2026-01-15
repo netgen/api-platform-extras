@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras\Service;
 
-use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Exception\ResourceClassNotFoundException;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\HttpOperation;
@@ -16,17 +15,15 @@ use Symfony\Component\Routing\RouterInterface;
 
 use function preg_replace;
 
-final readonly class IriTemplatesService
+final class IriTemplatesService
 {
     public function __construct(
-        private ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
-        private ResourceNameCollectionFactoryInterface $resourceExtractor,
-        private RouterInterface $router,
+        private readonly ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
+        private readonly ResourceNameCollectionFactoryInterface $resourceExtractor,
+        private readonly RouterInterface $router,
     ) {}
 
     /**
-     * @throws ResourceClassNotFoundException
-     *
      * @return array<string, string>
      */
     public function getIriTemplatesData(): array
@@ -36,8 +33,14 @@ final readonly class IriTemplatesService
         $iriTemplates = [];
 
         foreach ($resourceClasses as $class) {
-            /** @var ApiResource $resourceMetadata */
-            foreach ($this->resourceMetadataCollectionFactory->create($class) as $resourceMetadata) {
+            try {
+                $resourceMetadataCollection = $this->resourceMetadataCollectionFactory->create($class);
+            } catch (ResourceClassNotFoundException) {
+                continue;
+            }
+
+            /** @var \ApiPlatform\Metadata\ApiResource $resourceMetadata */
+            foreach ($resourceMetadataCollection as $resourceMetadata) {
                 /** @var Operations<HttpOperation> $operations */
                 $operations = $resourceMetadata->getOperations();
 
