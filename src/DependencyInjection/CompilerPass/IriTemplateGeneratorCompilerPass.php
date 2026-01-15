@@ -6,14 +6,20 @@ namespace Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass;
 
 use Netgen\ApiPlatformExtras\Command\GenerateIriTemplatesCommand;
 use Netgen\ApiPlatformExtras\Service\IriTemplatesService;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
-final class IriTemplateGeneratorCompilerPass extends FeatureCompilerPass
+final class IriTemplateGeneratorCompilerPass implements CompilerPassInterface
 {
+    private const FEATURE_ENABLED_PARAMETER = 'netgen_api_platform_extras.features.iri_template_generator.enabled';
+
     public function process(ContainerBuilder $container): void
     {
-        if ($container->getParameter($this->getFeatureEnabledParameterPath()) === false) {
+        if (
+            !$container->hasParameter(self::FEATURE_ENABLED_PARAMETER)
+            || $container->getParameter(self::FEATURE_ENABLED_PARAMETER) === false
+        ) {
             return;
         }
 
@@ -22,8 +28,7 @@ final class IriTemplateGeneratorCompilerPass extends FeatureCompilerPass
                 IriTemplatesService::class,
                 new Definition(IriTemplatesService::class),
             )
-            ->setAutowired(true)
-            ->setPublic(true);
+            ->setAutowired(true);
 
         $container
             ->setDefinition(
@@ -37,7 +42,6 @@ final class IriTemplateGeneratorCompilerPass extends FeatureCompilerPass
                     'description' => 'Generate IRI templates and write them to a JSON file',
                 ],
             )
-            ->setAutowired(true)
-            ->setPublic(true);
+            ->setAutowired(true);
     }
 }
