@@ -8,7 +8,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 
-final class Configuration implements ConfigurationInterface
+final readonly class Configuration implements ConfigurationInterface
 {
     public function __construct(private ExtensionInterface $extension) {}
 
@@ -19,20 +19,27 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('http_cache')
-                    ->canBeEnabled()
-                ->end()
-                ->arrayNode('schema_decoration')
-                    ->canBeEnabled()
-                ->end()
-                ->arrayNode('simple_normalizer')
-                    ->canBeEnabled()
-                ->end()
-                ->arrayNode('jwt_refresh')
-                    ->canBeEnabled()
-                ->end()
-                ->arrayNode('iri_template_generator')
-                    ->canBeEnabled()
+                ->arrayNode('features')
+                    ->children()
+                        ->arrayNode('http_cache')
+                            ->canBeEnabled()
+                        ->end()
+                        ->arrayNode('schema_decoration')
+                            ->canBeEnabled()
+                        ->end()
+                        ->arrayNode('simple_normalizer')
+                            ->canBeEnabled()
+                        ->end()
+                        ->arrayNode('jwt_refresh')
+                            ->canBeEnabled()
+                        ->end()
+                        ->arrayNode('iri_template_generator')
+                            ->canBeEnabled()
+                        ->end()
+                        ->arrayNode('schema_processor')
+                            ->canBeEnabled()
+                        ->end()
+                    ->end()
                 ->end()
             ->end();
 
