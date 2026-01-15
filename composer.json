@@ -40,5 +40,10 @@
     },
     "scripts": {
         "phpstan": "@php vendor/bin/phpstan analyse -c phpstan.neon --level=8 --ansi src"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     }
 }
