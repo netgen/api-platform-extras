@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass;
 
+use ApiPlatform\JsonSchema\SchemaFactoryInterface;
+use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
+use ApiPlatform\OpenApi\Options;
 use Netgen\ApiPlatformExtras\OpenApi\Factory\OpenApiFactory;
+use Netgen\ApiPlatformExtras\OpenApi\Processor\ExtraDefaultErrorsProcessor;
 use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,6 +27,19 @@ final class SchemaProcessorCompilerPass implements CompilerPassInterface
         ) {
             return;
         }
+
+        $container
+            ->setDefinition(
+                ExtraDefaultErrorsProcessor::class,
+                new Definition(ExtraDefaultErrorsProcessor::class),
+            )
+            ->setArguments([
+                new Reference(ResourceMetadataCollectionFactoryInterface::class),
+                new Reference(SchemaFactoryInterface::class),
+                new Reference(Options::class),
+                $container->getParameter('api_platform.error_formats'),
+            ])
+            ->addTag('netgen_api_platform_extras.open_api_processor');
 
         $container
             ->setDefinition(
