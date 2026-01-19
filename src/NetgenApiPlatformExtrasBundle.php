@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras;
 
+use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\IriTemplateGeneratorCompilerPass;
 use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\SchemaProcessorCompilerPass;
 use Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\IriTemplateGeneratorCompilerPass;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 final class NetgenApiPlatformExtrasBundle extends Bundle
