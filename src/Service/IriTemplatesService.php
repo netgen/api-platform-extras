@@ -18,9 +18,9 @@ use function preg_replace;
 final class IriTemplatesService
 {
     public function __construct(
-        private readonly ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
-        private readonly ResourceNameCollectionFactoryInterface $resourceExtractor,
-        private readonly RouterInterface $router,
+        private ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
+        private ResourceNameCollectionFactoryInterface $resourceExtractor,
+        private RouterInterface $router,
     ) {}
 
     /**

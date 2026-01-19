@@ -25,8 +25,8 @@ use const JSON_UNESCAPED_SLASHES;
 final class GenerateIriTemplatesCommand extends Command
 {
     public function __construct(
-        private readonly IriTemplatesService $iriTemplatesService,
-        private readonly Filesystem $filesystem,
+        private IriTemplatesService $iriTemplatesService,
+        private Filesystem $filesystem,
     ) {
         parent::__construct('netgen:api-platform-extras:generate-iri-templates');
     }
