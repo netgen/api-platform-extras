@@ -17,7 +17,7 @@ use function in_array;
 use function is_string;
 use function str_replace;
 
-final readonly class SchemaFactoryDecorator implements SchemaFactoryInterface
+final class SchemaFactoryDecorator implements SchemaFactoryInterface
 {
     use SchemaUriPrefixTrait;
 
@@ -47,13 +47,13 @@ final readonly class SchemaFactoryDecorator implements SchemaFactoryInterface
             && $type === Schema::TYPE_INPUT
             && in_array($operation::class, [Put::class, Post::class, Patch::class], true)
         ) {
-            $this->addJsonldUpdatePropertyToObjectSchemaDefinitions($currentReference, $schemaPrefix, $schema->getDefinitions());
+            $this->ensureJsonldInputPropertyForInputSchemas($currentReference, $schemaPrefix, $schema->getDefinitions());
         }
 
         return $schema;
     }
 
-    private function addJsonldUpdatePropertyToObjectSchemaDefinitions(string $reference, string $schemaPrefix, ArrayObject $definitions): void
+    private function ensureJsonldInputPropertyForInputSchemas(string $reference, string $schemaPrefix, ArrayObject $definitions): void
     {
         $definitionName = str_replace($schemaPrefix, '', $reference);
 
@@ -62,8 +62,12 @@ final readonly class SchemaFactoryDecorator implements SchemaFactoryInterface
                 continue;
             }
 
-            if (isset($property['$ref']) && !isset($definitions[str_replace($schemaPrefix, '', $property['$ref'])]['properties'][self::JSONLD_INPUT_OBJECT_PROPERTY_NAME])) {
-                $definitions[str_replace($schemaPrefix, '', $property['$ref'])]['properties'][self::JSONLD_INPUT_OBJECT_PROPERTY_NAME] = self::JSONLD_INPUT_OBJECT_PROPERTY;
+            if (isset($property['$ref'])) {
+                $this->addJsonldInputProperty(
+                    $definitions,
+                    $schemaPrefix,
+                    $property['$ref'],
+                );
 
                 break;
             }
@@ -78,9 +82,24 @@ final readonly class SchemaFactoryDecorator implements SchemaFactoryInterface
                         continue;
                     }
 
-                    $definitions[str_replace($schemaPrefix, '', $subschema['$ref'])]['properties'][self::JSONLD_INPUT_OBJECT_PROPERTY_NAME] = self::JSONLD_INPUT_OBJECT_PROPERTY;
+                    $this->addJsonldInputProperty(
+                        $definitions,
+                        $schemaPrefix,
+                        $subschema['$ref'],
+                    );
                 }
             }
         }
+    }
+
+    private function addJsonldInputProperty(
+        ArrayObject $definitions,
+        string $schemaPrefix,
+        string $ref,
+    ): void {
+        $definitionKey = str_replace($schemaPrefix, '', $ref);
+
+        $definitions[$definitionKey]['properties'][self::JSONLD_INPUT_OBJECT_PROPERTY_NAME]
+            ??= self::JSONLD_INPUT_OBJECT_PROPERTY;
     }
 }

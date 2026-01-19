@@ -9,7 +9,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Property\Factory\PropertyMetadataFactoryInterface;
 use Symfony\Component\TypeInfo\Type\NullableType;
 
-final readonly class PropertyMetadataFactoryDecorator implements PropertyMetadataFactoryInterface
+final class PropertyMetadataFactoryDecorator implements PropertyMetadataFactoryInterface
 {
     public function __construct(
         private PropertyMetadataFactoryInterface $decorated,
