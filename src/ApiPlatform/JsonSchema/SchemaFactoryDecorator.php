@@ -35,6 +35,7 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
         private SchemaFactoryInterface $decorated,
     ) {}
 
+    /** @param array<mixed> $serializerContext */
     public function buildSchema(string $className, string $format = 'json', string $type = Schema::TYPE_OUTPUT, ?Operation $operation = null, ?Schema $schema = null, ?array $serializerContext = null, bool $forceCollection = false): Schema
     {
         $schema = $this->decorated->buildSchema($className, $format, $type, $operation, $schema, $serializerContext, $forceCollection);
@@ -45,6 +46,7 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
         if (
             is_string($currentReference)
             && $type === Schema::TYPE_INPUT
+            && $operation instanceof Operation
             && in_array($operation::class, [Put::class, Post::class, Patch::class], true)
         ) {
             $this->ensureJsonldInputPropertyForInputSchemas($currentReference, $schemaPrefix, $schema->getDefinitions());
@@ -53,6 +55,7 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
         return $schema;
     }
 
+    /** @param ArrayObject<string, mixed> $definitions */
     private function ensureJsonldInputPropertyForInputSchemas(string $reference, string $schemaPrefix, ArrayObject $definitions): void
     {
         $definitionName = str_replace($schemaPrefix, '', $reference);
@@ -92,6 +95,7 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
         }
     }
 
+    /** @param ArrayObject<string, mixed> $definitions */
     private function addJsonldInputProperty(
         ArrayObject $definitions,
         string $schemaPrefix,
