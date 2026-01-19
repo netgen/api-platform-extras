@@ -31,10 +31,7 @@ final class SchemaProcessorCompilerPass implements CompilerPassInterface
             )
             ->setArguments([
                 new Reference('api_platform.openapi.factory.inner'),
-                new TaggedIteratorArgument(
-                    tag: 'netgen_api_platform_extras.open_api_processor',
-                    defaultPriorityMethod: 'getPriority',
-                ),
+                new TaggedIteratorArgument('netgen_api_platform_extras.open_api_processor'),
             ])
             ->setDecoratedService('api_platform.openapi.factory', 'api_platform.openapi.factory.inner', -25);
     }

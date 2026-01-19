@@ -7,6 +7,9 @@ namespace Netgen\ApiPlatformExtras\OpenApi\Factory;
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\OpenApi;
 
+use function iterator_to_array;
+use function usort;
+
 final class OpenApiFactory implements OpenApiFactoryInterface
 {
     /**
@@ -15,7 +18,9 @@ final class OpenApiFactory implements OpenApiFactoryInterface
     public function __construct(
         private OpenApiFactoryInterface $decorated,
         private iterable $processors,
-    ) {}
+    ) {
+        $this->processors = $this->sortProcessors($processors);
+    }
 
     public function __invoke(array $context = []): OpenApi
     {
@@ -31,5 +36,20 @@ final class OpenApiFactory implements OpenApiFactoryInterface
         }
 
         return $openApi;
+    }
+
+    /**
+     * @return iterable<\Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface>
+     */
+    private function sortProcessors(iterable $processors): array
+    {
+        $processors = iterator_to_array($processors);
+
+        usort(
+            $processors,
+            static fn ($a, $b): int => $b->getPriority() <=> $a->getPriority(),
+        );
+
+        return $processors;
     }
 }
