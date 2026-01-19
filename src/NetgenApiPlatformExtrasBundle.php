@@ -23,7 +23,6 @@ final class NetgenApiPlatformExtrasBundle extends Bundle
         );
 
         $container->registerForAutoconfiguration(OpenApiProcessorInterface::class)
-            ->addTag('netgen_api_platform_extras.open_api_processor')
-            ->setLazy(true);
+            ->addTag('netgen_api_platform_extras.open_api_processor');
     }
 }
