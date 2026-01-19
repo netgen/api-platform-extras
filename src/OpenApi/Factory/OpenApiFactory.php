@@ -6,12 +6,11 @@ namespace Netgen\ApiPlatformExtras\OpenApi\Factory;
 
 use ApiPlatform\OpenApi\Factory\OpenApiFactoryInterface;
 use ApiPlatform\OpenApi\OpenApi;
-use Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface;
 
-final readonly class OpenApiFactory implements OpenApiFactoryInterface
+final class OpenApiFactory implements OpenApiFactoryInterface
 {
     /**
-     * @param iterable<OpenApiProcessorInterface> $processors
+     * @param iterable<\Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface> $processors
      */
     public function __construct(
         private OpenApiFactoryInterface $decorated,
