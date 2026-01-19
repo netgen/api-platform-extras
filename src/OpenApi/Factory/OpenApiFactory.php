@@ -39,7 +39,9 @@ final class OpenApiFactory implements OpenApiFactoryInterface
     }
 
     /**
-     * @return iterable<\Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface>
+     * @param iterable<\Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface> $processors
+     *
+     * @return \Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface[]
      */
     private function sortProcessors(iterable $processors): array
     {
@@ -47,7 +49,7 @@ final class OpenApiFactory implements OpenApiFactoryInterface
 
         usort(
             $processors,
-            static fn ($a, $b): int => $b->getPriority() <=> $a->getPriority(),
+            static fn ($a, $b): int => $b::getPriority() <=> $a::getPriority(),
         );
 
         return $processors;
