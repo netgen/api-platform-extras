@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\ApiPlatformExtras;
 
 use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\IriTemplateGeneratorCompilerPass;
+use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\SchemaDecorationCompilerPass;
 use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\SchemaProcessorCompilerPass;
 use Netgen\ApiPlatformExtras\OpenApi\Processor\OpenApiProcessorInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,6 +21,9 @@ final class NetgenApiPlatformExtrasBundle extends Bundle
         )
         ->addCompilerPass(
             new SchemaProcessorCompilerPass(),
+        )
+        ->addCompilerPass(
+            new SchemaDecorationCompilerPass(),
         );
 
         $container->registerForAutoconfiguration(OpenApiProcessorInterface::class)
