@@ -8,10 +8,17 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
+use function in_array;
 use function is_array;
 
 final class NetgenApiPlatformExtrasExtension extends Extension
 {
+    private const array SCALAR_ARRAY_PARAMS = [
+        'ignored_routes',
+        'ignored_paths',
+        'allowed_firewalls',
+    ];
+
     /**
      * @param mixed[] $configs
      */
@@ -41,7 +48,7 @@ final class NetgenApiPlatformExtrasExtension extends Extension
         foreach ($config as $key => $value) {
             $paramName = "{$alias}.{$key}";
 
-            if (is_array($value)) {
+            if (is_array($value) && !in_array($key, self::SCALAR_ARRAY_PARAMS, true)) {
                 $this->setParameters($container, $value, $paramName);
             } else {
                 $container->setParameter($paramName, $value);

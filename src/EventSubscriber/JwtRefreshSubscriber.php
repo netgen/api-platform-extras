@@ -40,7 +40,7 @@ final class JwtRefreshSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['onKernelRequest', 1024],
+            RequestEvent::class => ['onKernelRequest', 10],
         ];
     }
 
