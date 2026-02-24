@@ -26,7 +26,7 @@ final readonly class RequestTokenResolver
 
         $source = $this->detectSource($request);
 
-        return $source
+        return $source !== null
             ? new RefreshToken($source, $this->refreshTokenName, $value)
             : null;
     }

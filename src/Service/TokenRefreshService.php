@@ -26,6 +26,10 @@ use function time;
 
 final class TokenRefreshService
 {
+    /**
+     * @param ServiceLocator<UserProviderInterface<UserInterface>> $providerLocator
+     * @param array<string, mixed> $refreshCookieSettings
+     */
     public function __construct(
         private RefreshTokenManagerInterface $refreshTokenManager,
         private RefreshTokenGeneratorInterface $refreshTokenGenerator,
@@ -83,22 +87,20 @@ final class TokenRefreshService
         }
 
         $provider = $this->providerLocator->get($providerId);
-        if (!$provider instanceof UserProviderInterface) {
-            return;
-        }
 
         $refreshToken = $this->refreshTokenManager->get($token->value);
         if (!$refreshToken instanceof RefreshTokenInterface || !$refreshToken->isValid()) {
             return;
         }
 
-        try {
-            $user = $provider->loadUserByIdentifier($refreshToken->getUsername());
-        } catch (Throwable) {
+        $username = $refreshToken->getUsername();
+        if (!is_string($username) || $username === '') {
             return;
         }
 
-        if (!$user instanceof UserInterface) {
+        try {
+            $user = $provider->loadUserByIdentifier($username);
+        } catch (Throwable) {
             return;
         }
 

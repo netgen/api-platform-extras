@@ -15,12 +15,16 @@ use Symfony\Component\Security\Http\FirewallMapInterface;
 
 use function array_find;
 use function in_array;
-use function is_string;
 use function method_exists;
 use function str_starts_with;
 
 final class JwtRefreshSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @param string[] $allowedFirewalls
+     * @param string[] $ignoredRoutes
+     * @param string[] $ignoredPaths
+     */
     public function __construct(
         private TokenExtractorInterface $jwtTokenExtractor,
         private RequestTokenResolver $tokensResolver,
@@ -73,14 +77,14 @@ final class JwtRefreshSubscriber implements EventSubscriberInterface
 
         if (array_find(
             $this->ignoredPaths,
-            static fn ($path) => is_string($path) && str_starts_with($request->getPathInfo(), $path),
+            static fn (string $path) => str_starts_with($request->getPathInfo(), $path),
         ) !== null) {
             return;
         }
 
         if (array_find(
             $this->ignoredRoutes,
-            static fn ($route) => is_string($route) && $request->attributes->get('_route') === $route,
+            static fn (string $route) => $request->attributes->get('_route') === $route,
         ) !== null) {
             return;
         }

@@ -276,6 +276,9 @@ final class JwtRefreshCompilerPass implements CompilerPassInterface
         return $references;
     }
 
+    /**
+     * @param string[] $ids
+     */
     private function firstAvailable(ContainerBuilder $container, array $ids): ?string
     {
         foreach ($ids as $id) {
