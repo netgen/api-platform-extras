@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass;
 
 use Netgen\ApiPlatformExtras\EventSubscriber\JwtRefreshSubscriber;
+use Netgen\ApiPlatformExtras\EventSubscriber\LogoutSubscriber;
 use Netgen\ApiPlatformExtras\Gesdinet\JWTRefreshTokenBundle\Request\Extractor\RequestHeaderExtractor;
 use Netgen\ApiPlatformExtras\Service\RequestTokenResolver;
 use Netgen\ApiPlatformExtras\Service\TokenRefreshService;
@@ -14,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Security\Http\Event\LogoutEvent;
 
 use function array_key_exists;
 use function is_array;
@@ -30,7 +32,13 @@ final class JwtRefreshCompilerPass implements CompilerPassInterface
         $featureEnabled = $this->resolveBoolParameter($container, sprintf('%s.enabled', self::BASE_FEATURE_PATH), false);
         $autoRefreshCookie = $this->resolveBoolParameter($container, sprintf('%s.auto_refresh_cookie', self::BASE_FEATURE_PATH), false);
         $autoRefreshHeader = $this->resolveBoolParameter($container, sprintf('%s.auto_refresh_header', self::BASE_FEATURE_PATH), false);
-        if ($featureEnabled === false || ($autoRefreshCookie === false && $autoRefreshHeader === false)) {
+        if ($featureEnabled === false) {
+            return;
+        }
+
+        $this->registerLogoutSubscriber($container);
+
+        if ($autoRefreshCookie === false && $autoRefreshHeader === false) {
             return;
         }
 
@@ -277,5 +285,25 @@ final class JwtRefreshCompilerPass implements CompilerPassInterface
         }
 
         return null;
+    }
+
+    private function registerLogoutSubscriber(ContainerBuilder $container): void
+    {
+        foreach ($container->getDefinitions() as $id => $_definition) {
+            if (!str_starts_with($id, 'security.event_dispatcher.')) {
+                continue;
+            }
+
+            $container->setDefinition(
+                sprintf('%s.%s', LogoutSubscriber::class, $id),
+                (new Definition(LogoutSubscriber::class))
+                    ->addTag('kernel.event_listener', [
+                        'event' => LogoutEvent::class,
+                        'method' => 'onLogout',
+                        'dispatcher' => $id,
+                        'priority' => -128,
+                    ]),
+            );
+        }
     }
 }

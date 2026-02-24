@@ -51,3 +51,36 @@ JWT/refresh token names and header prefix are taken from Lexik/Gesdinet config (
 - `gesdinet_jwt_refresh_token.token_parameter_name` (default: `refresh_token`)
 
 When Lexik extractor parameters are not exposed as container parameters, values are read from Lexik extractor service definition arguments.
+
+## Logout Configuration
+
+Recommended config to invalidate both tokens and clear cookies with no custom app logic:
+
+```yaml
+# config/packages/lexik_jwt_authentication.yaml
+lexik_jwt_authentication:
+  blocklist_token:
+    enabled: true
+```
+
+```yaml
+# config/packages/security.yaml
+security:
+  firewalls:
+    api:
+      logout:
+        path: app_logout
+        delete_cookies:
+          # JWT cookie configured in lexik_jwt_authentication.token_extractors.cookie.name
+          jwt-bearer: ~
+          # Refresh cookie configured in gesdinet_jwt_refresh_token.token_parameter_name
+          refresh-token: ~
+      refresh-jwt:
+        invalidate_token_on_logout: true
+```
+
+Notes:
+
+- `invalidate_token_on_logout: true` (Gesdinet) deletes refresh token on logout.
+- `blocklist_token.enabled: true` (Lexik) blacklists JWT on logout.
+- This bundle normalizes Gesdinet `400 No refresh_token found.` to `200 Logged out.` for idempotent logout responses.
