@@ -138,12 +138,13 @@ final class JwtRefreshCompilerPass implements CompilerPassInterface
                 sprintf('lexik_jwt_authentication.cookie_provider.%s', $jwtCookieName),
                 ContainerInterface::NULL_ON_INVALID_REFERENCE,
             ),
-            $refreshTtl,
+            $refreshCookieConfig,
+            $jwtAuthorizationHeaderPrefix,
             $refreshSingleUse,
             $jwtAuthorizationHeaderName,
-            $jwtAuthorizationHeaderPrefix,
             $jwtCookieName,
-            $refreshCookieConfig,
+            $refreshTtl,
+            $this->resolveBoolParameter($container, sprintf('%s.user_aware', self::BASE_FEATURE_PATH), false),
         ]);
 
         $container->setDefinition(
