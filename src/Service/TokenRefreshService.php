@@ -11,6 +11,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Cookie\JWTCookieProvider;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Netgen\ApiPlatformExtras\JwtRefresh\TokenSourceType;
 use Netgen\ApiPlatformExtras\JwtRefresh\ValueObject\RefreshToken;
+use Netgen\ApiPlatformExtras\Model\UserAwareRefreshToken;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,12 +37,13 @@ final class TokenRefreshService
         private JWTTokenManagerInterface $jwtTokenManager,
         private ServiceLocator $providerLocator,
         private ?JWTCookieProvider $jwtCookieProvider,
-        private int $refreshTtl,
+        private array $refreshCookieSettings,
+        private string $jwtHeaderPrefix,
         private bool $refreshSingleUse,
         private string $jwtHeaderName,
-        private string $jwtHeaderPrefix,
         private string $jwtCookieName,
-        private array $refreshCookieSettings,
+        private int $refreshTtl,
+        private bool $userAware,
     ) {
         $this->refreshCookieSettings = array_merge([
             'enabled' => false,
@@ -93,7 +95,14 @@ final class TokenRefreshService
             return;
         }
 
-        $username = $refreshToken->getUsername();
+        if ($this->userAware && !$refreshToken instanceof UserAwareRefreshToken) {
+            return;
+        }
+
+        if ($this->userAware && !$provider->supportsClass($refreshToken->getClass())) {
+            $username = $refreshToken->getUsername();
+        }
+
         if (!is_string($username) || $username === '') {
             return;
         }
