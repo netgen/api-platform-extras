@@ -13,8 +13,10 @@ abstract class UserAwareRefreshToken extends AbstractRefreshToken
 
     public static function createForUserWithTtl(string $refreshToken, UserInterface $user, int $ttl): static
     {
-        return parent::createForUserWithTtl($refreshToken, $user, $ttl)
-            ->setClass($user::class);
+        /** @var static $token */
+        $token = parent::createForUserWithTtl($refreshToken, $user, $ttl);
+
+        return $token->setClass($user::class);
     }
 
     public function getClass(): string

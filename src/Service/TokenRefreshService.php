@@ -100,8 +100,10 @@ final class TokenRefreshService
         }
 
         if ($this->userAware && !$provider->supportsClass($refreshToken->getClass())) {
-            $username = $refreshToken->getUsername();
+            return;
         }
+
+        $username = $refreshToken->getUsername();
 
         if (!is_string($username) || $username === '') {
             return;
