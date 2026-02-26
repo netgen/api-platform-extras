@@ -5,6 +5,7 @@ Configuration (config/packages/api_platform_extras.yaml):
 ```yaml
 api_platform_extras:
   features:
+    # NOT IMPLEMENTED YET
     http_cache:
       enabled: false
     schema_decoration:
@@ -13,12 +14,14 @@ api_platform_extras:
       default_required_properties: false
       #Add @id as an optional property to all POST, PUT and PATCH schemas.
       jsonld_update_schema: false
+    # NOT IMPLEMENTED YET
     simple_normalizer:
       enabled: false
     jwt_refresh:
       enabled: false
       auto_refresh_cookie: false
       auto_refresh_header: false
+      user_aware: false
       ignored_routes: []
       ignored_paths: []
       allowed_firewalls: []
@@ -41,6 +44,8 @@ Enable features by setting the corresponding flag to true.
 
 If both auto-refresh flags are `false`, behavior is effectively the same as feature disabled.
 
+`user_aware` defaults to `false`. When enabled, refresh token handling validates that the selected user provider supports the user class stored on the refresh token.
+
 ### Related bundle config
 
 JWT/refresh token names and header prefix are taken from Lexik/Gesdinet config (with bundle defaults):
@@ -51,6 +56,29 @@ JWT/refresh token names and header prefix are taken from Lexik/Gesdinet config (
 - `gesdinet_jwt_refresh_token.token_parameter_name` (default: `refresh_token`)
 
 When Lexik extractor parameters are not exposed as container parameters, values are read from Lexik extractor service definition arguments.
+
+### Refresh token entity
+
+When using custom refresh token entities, extend the bundle entity:
+
+```php
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'project_prefix_refresh_token')]
+class RefreshToken extends \Netgen\ApiPlatformExtras\Entity\RefreshToken {}
+```
+
+And configure Gesdinet to use your entity:
+
+```yaml
+gesdinet_jwt_refresh_token:
+  refresh_token_class: App\Entity\RefreshToken
+```
 
 ## Logout Configuration
 
