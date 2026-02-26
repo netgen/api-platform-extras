@@ -95,12 +95,14 @@ final class TokenRefreshService
             return;
         }
 
-        if ($this->userAware && !$refreshToken instanceof UserAwareRefreshToken) {
-            return;
-        }
+        if ($this->userAware) {
+            if (!$refreshToken instanceof UserAwareRefreshToken) {
+                return;
+            }
 
-        if ($this->userAware && !$provider->supportsClass($refreshToken->getClass())) {
-            return;
+            if (!$provider->supportsClass($refreshToken->getClass())) {
+                return;
+            }
         }
 
         $username = $refreshToken->getUsername();
