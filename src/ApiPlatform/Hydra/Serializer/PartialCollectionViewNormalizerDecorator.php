@@ -12,7 +12,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use function array_key_exists;
 use function is_array;
 use function max;
-use function method_exists;
 use function min;
 
 final class PartialCollectionViewNormalizerDecorator implements NormalizerInterface, NormalizerAwareInterface
@@ -21,7 +20,6 @@ final class PartialCollectionViewNormalizerDecorator implements NormalizerInterf
         private readonly NormalizerInterface $decorated,
     ) {}
 
-    /** @param array<mixed> $context */
     public function normalize(mixed $data, ?string $format = null, array $context = []): array|\ArrayObject|bool|float|int|string|null
     {
         $normalized = $this->decorated->normalize($data, $format, $context);
@@ -45,27 +43,21 @@ final class PartialCollectionViewNormalizerDecorator implements NormalizerInterf
         $normalized[$viewKey]['lastPage'] ??= $lastPage;
         $normalized[$viewKey]['currentPage'] ??= $currentPage;
         $normalized[$viewKey]['previousPage'] ??= max(1, $currentPage - 1);
-        $normalized[$viewKey]['nextPage'] ??= (int) min($currentPage + 1, $lastPage);
+        $normalized[$viewKey]['nextPage'] ??= min($currentPage + 1, $lastPage);
         $normalized[$viewKey]['itemsPerPage'] ??= (int) $data->getItemsPerPage();
 
         return $normalized;
     }
 
-    /** @param array<mixed> $context */
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $this->decorated->supportsNormalization($data, $format, $context);
     }
 
-    /** @return array<string, bool>|array<string, null> */
+    /** @return array<string, bool|null> */
     public function getSupportedTypes(?string $format): array
     {
-        if (method_exists($this->decorated, 'getSupportedTypes')) {
-            /* @var array<string, bool>|array<string, null> $supportedTypes */
-            return $this->decorated->getSupportedTypes($format);
-        }
-
-        return ['*' => false];
+        return $this->decorated->getSupportedTypes($format);
     }
 
     public function setNormalizer(NormalizerInterface $normalizer): void
@@ -75,7 +67,7 @@ final class PartialCollectionViewNormalizerDecorator implements NormalizerInterf
         }
     }
 
-    /** @return array<string, bool>|array<string, null> */
+    /** @param array<string, mixed> $context */
     private function isCursorPaginationEnabled(array $context): bool
     {
         $operation = $context['operation'] ?? null;
