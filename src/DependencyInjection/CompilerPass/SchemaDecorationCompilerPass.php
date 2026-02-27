@@ -49,6 +49,7 @@ final class SchemaDecorationCompilerPass implements CompilerPassInterface
                 ->setDefinition('netgen.api_platform_extras.metadata.property.metadata_factory', new Definition(PropertyMetadataFactoryDecorator::class))
                 ->setArguments([
                     new Reference('netgen.api_platform_extras.metadata.property.metadata_factory.inner'),
+                    $container->getParameter(sprintf('%s.nullable_required', self::BASE_FEATURE_PATH)),
                 ])
                 ->setDecoratedService('api_platform.metadata.property.metadata_factory', null, 19);
         }
