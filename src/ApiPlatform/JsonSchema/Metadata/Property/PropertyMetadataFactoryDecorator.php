@@ -13,6 +13,7 @@ final class PropertyMetadataFactoryDecorator implements PropertyMetadataFactoryI
 {
     public function __construct(
         private PropertyMetadataFactoryInterface $decorated,
+        private bool $nullableRequired,
     ) {}
 
     public function create(string $resourceClass, string $property, array $options = []): ApiProperty
@@ -23,8 +24,10 @@ final class PropertyMetadataFactoryDecorator implements PropertyMetadataFactoryI
 
         if (
             ($options['schema_type'] ?? null) === Schema::TYPE_OUTPUT
-
-            && $type !== null && $type::class !== NullableType::class
+            && (
+                ($type !== null && $this->nullableRequired)
+                || ($type !== null && $type::class !== NullableType::class)
+            )
         ) {
             return $propertyMetadata->withRequired(true);
         }
