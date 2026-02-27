@@ -73,6 +73,24 @@ use Doctrine\ORM\Mapping as ORM;
 class RefreshToken extends \Netgen\ApiPlatformExtras\Entity\RefreshToken {}
 ```
 
+```yaml
+# config/doctrine/RefreshToken.orm.yaml
+App\Entity\RefreshToken:
+  type: entity
+  table: project_prefix_refresh_token
+```
+
+```xml
+<!-- config/doctrine/RefreshToken.orm.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="App\Entity\RefreshToken" table="project_prefix_refresh_token" />
+</doctrine-mapping>
+```
+
 And configure Gesdinet to use your entity:
 
 ```yaml
