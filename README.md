@@ -16,7 +16,6 @@ api_platform_extras:
       nullable_required: false
       #Add @id as an optional property to all POST, PUT and PATCH schemas.
       jsonld_update_schema: false
-    # NOT IMPLEMENTED YET
     hydra_pagination_enrichment:
       #Adds numeric pagination fields to Hydra view keys (prefix depends on api_platform.serializer.hydra_prefix).
       enabled: false

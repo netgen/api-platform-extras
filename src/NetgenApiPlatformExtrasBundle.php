@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras;
 
+use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\HydraPaginationEnrichmentCompilerPass;
 use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\IriTemplateGeneratorCompilerPass;
 use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\JwtRefreshCompilerPass;
 use Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass\SchemaDecorationCompilerPass;
@@ -32,6 +33,9 @@ final class NetgenApiPlatformExtrasBundle extends Bundle
         )
         ->addCompilerPass(
             new SchemaDecorationCompilerPass(),
+        )
+        ->addCompilerPass(
+            new HydraPaginationEnrichmentCompilerPass(),
         )
         ->addCompilerPass(
             new JwtRefreshCompilerPass(),
