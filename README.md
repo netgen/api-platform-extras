@@ -41,6 +41,7 @@ Enable features by setting the corresponding flag to true.
 ## Hydra Pagination Enrichment Feature
 
 `hydra_pagination_enrichment` adds numeric pagination fields (`firstPage`, `lastPage`, `currentPage`, `previousPage`, `nextPage`, `itemsPerPage`) to Hydra collection view in both schema and response.
+- ! enrichment skipped if cursor pagination used
 
 The Hydra key prefix is controlled by API Platform and is boolean:
 
