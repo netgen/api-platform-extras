@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\ApiPlatformExtras\DependencyInjection\CompilerPass;
 
 use Netgen\ApiPlatformExtras\ApiPlatform\Hydra\JsonSchema\SchemaFactoryDecorator;
+use Netgen\ApiPlatformExtras\ApiPlatform\Hydra\Serializer\PartialCollectionViewNormalizerDecorator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -33,5 +34,16 @@ final class HydraPaginationEnrichmentCompilerPass implements CompilerPassInterfa
                 new Reference('netgen.api_platform_extras.hydra.json_schema.schema_factory.inner'),
             ])
             ->setDecoratedService('api_platform.hydra.json_schema.schema_factory');
+
+        if (!$container->hasDefinition('api_platform.hydra.normalizer.partial_collection_view')) {
+            return;
+        }
+
+        $container
+            ->setDefinition('netgen.api_platform_extras.hydra.normalizer.partial_collection_view', new Definition(PartialCollectionViewNormalizerDecorator::class))
+            ->setArguments([
+                new Reference('netgen.api_platform_extras.hydra.normalizer.partial_collection_view.inner'),
+            ])
+            ->setDecoratedService('api_platform.hydra.normalizer.partial_collection_view');
     }
 }

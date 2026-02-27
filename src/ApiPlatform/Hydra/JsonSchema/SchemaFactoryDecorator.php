@@ -90,6 +90,13 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface, SchemaFact
             return $schema;
         }
 
+        if (
+            isset($properties['view']['properties']['firstPage'])
+            || isset($properties['hydra:view']['properties']['firstPage'])
+        ) {
+            return $schema;
+        }
+
         foreach (self::HYDRA_VIEW_KEYS as $viewKey) {
             $viewSchema = $properties[$viewKey] ?? null;
             if (!is_array($viewSchema)) {
