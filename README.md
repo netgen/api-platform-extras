@@ -12,6 +12,8 @@ api_platform_extras:
       enabled: false
       #Mark schema properties as required by default when the type is not nullable.
       default_required_properties: false
+      #Additionally mark nullable types as required - safe to use if api_platform.defaults.normalization_context.skip_null_values set to false (default true).
+      nullable_required: false
       #Add @id as an optional property to all POST, PUT and PATCH schemas.
       jsonld_update_schema: false
     # NOT IMPLEMENTED YET
