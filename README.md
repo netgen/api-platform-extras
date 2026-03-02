@@ -16,6 +16,9 @@ api_platform_extras:
       nullable_required: false
       #Add @id as an optional property to all POST, PUT and PATCH schemas.
       jsonld_update_schema: false
+    hydra_pagination_enrichment:
+      #Adds numeric pagination fields to Hydra view keys (prefix depends on api_platform.serializer.hydra_prefix).
+      enabled: false
     # NOT IMPLEMENTED YET
     simple_normalizer:
       enabled: false
@@ -34,6 +37,16 @@ api_platform_extras:
 ```
 
 Enable features by setting the corresponding flag to true.
+
+## Hydra Pagination Enrichment Feature
+
+`hydra_pagination_enrichment` adds numeric pagination fields (`firstPage`, `lastPage`, `currentPage`, `previousPage`, `nextPage`, `itemsPerPage`) to Hydra collection view in both schema and response.
+- ! enrichment skipped if cursor pagination used
+
+The Hydra key prefix is controlled by API Platform and is boolean:
+
+- `api_platform.serializer.hydra_prefix: true` -> prefixed keys (for example `hydra:view`, `hydra:first`)
+- `api_platform.serializer.hydra_prefix: false` (default) -> unprefixed keys (`view`, `first`)
 
 ## JWT Refresh Feature
 
