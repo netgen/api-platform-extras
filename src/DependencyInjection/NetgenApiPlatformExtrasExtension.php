@@ -7,11 +7,13 @@ namespace Netgen\ApiPlatformExtras\DependencyInjection;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
+use function dirname;
 use function in_array;
 use function is_array;
 
-final class NetgenApiPlatformExtrasExtension extends Extension
+final class NetgenApiPlatformExtrasExtension extends Extension implements PrependExtensionInterface
 {
     private const array SCALAR_ARRAY_PARAMS = [
         'ignored_routes',
@@ -27,6 +29,29 @@ final class NetgenApiPlatformExtrasExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $this->setParameters($container, $config, $this->getAlias());
+    }
+
+    public function prepend(ContainerBuilder $container): void
+    {
+        if (!$container->hasExtension('doctrine')) {
+            return;
+        }
+
+        $container->prependExtensionConfig(
+            'doctrine',
+            [
+                'orm' => [
+                    'mappings' => [
+                        'NetgenApiPlatformExtras' => [
+                            'type' => 'xml',
+                            'is_bundle' => false,
+                            'dir' => dirname(__DIR__, 2) . '/config/doctrine',
+                            'prefix' => 'Netgen\ApiPlatformExtras\Entity',
+                        ],
+                    ],
+                ],
+            ],
+        );
     }
 
     /**
