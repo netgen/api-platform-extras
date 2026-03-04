@@ -4,5 +4,5 @@ doctrine:
             NetgenApiPlatformExtras:
                 type: xml
                 is_bundle: false
-                dir: '%kernel.project_dir%/vendor/netgen/api-platform-extras/config/doctrine'
+                dir: '%kernel.project_dir%/vendor/netgen/api-platform-extras/src/Resources/config/doctrine'
                 prefix: 'Netgen\ApiPlatformExtras\Entity'

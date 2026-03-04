@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace Netgen\ApiPlatformExtras\DependencyInjection;
 
-use RuntimeException;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Yaml;
 
-use function dirname;
+use function file_get_contents;
 use function in_array;
 use function is_array;
-use function is_file;
-use function is_readable;
-use function sprintf;
 
 final class NetgenApiPlatformExtrasExtension extends Extension implements PrependExtensionInterface
 {
@@ -44,24 +39,10 @@ final class NetgenApiPlatformExtrasExtension extends Extension implements Prepen
             return;
         }
 
-        $configFile = dirname(__DIR__, 2) . '/config/doctrine.yaml';
-
-        if (!is_file($configFile) || !is_readable($configFile)) {
-            return;
-        }
-
-        try {
-            $config = Yaml::parseFile($configFile);
-        } catch (ParseException $e) {
-            throw new RuntimeException(sprintf('Could not parse YAML file "%s": %s', $configFile, $e->getMessage()), 0, $e);
-        }
-
-        if (!is_array($config)) {
-            return;
-        }
-
-        $container->addResource(new FileResource($configFile));
+        $configFile = __DIR__ . '/../Resources/config/doctrine.yaml';
+        $config = Yaml::parse((string) file_get_contents($configFile));
         $container->prependExtensionConfig('doctrine', $config['doctrine']);
+        $container->addResource(new FileResource($configFile));
     }
 
     /**
