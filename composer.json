@@ -33,6 +33,7 @@
         "symfony/console": "^7.3 || ^8.0",
         "symfony/security-core": "^7.3 || ^8.0",
         "symfony/security-http": "^7.3 || ^8.0",
+        "symfony/yaml": "^7.3 || ^8.0",
         "api-platform/symfony": "^4.2",
         "api-platform/doctrine-orm": "^4.2",
         "lexik/jwt-authentication-bundle": "^3.1",

@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Netgen\ApiPlatformExtras\DependencyInjection;
 
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\Yaml\Yaml;
 
+use function file_get_contents;
 use function in_array;
 use function is_array;
 
-final class NetgenApiPlatformExtrasExtension extends Extension
+final class NetgenApiPlatformExtrasExtension extends Extension implements PrependExtensionInterface
 {
     private const array SCALAR_ARRAY_PARAMS = [
         'ignored_routes',
@@ -27,6 +31,18 @@ final class NetgenApiPlatformExtrasExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $this->setParameters($container, $config, $this->getAlias());
+    }
+
+    public function prepend(ContainerBuilder $container): void
+    {
+        if (!$container->hasExtension('doctrine')) {
+            return;
+        }
+
+        $configFile = __DIR__ . '/../Resources/config/doctrine.yaml';
+        $config = Yaml::parse((string) file_get_contents($configFile));
+        $container->prependExtensionConfig('doctrine', $config['doctrine']);
+        $container->addResource(new FileResource($configFile));
     }
 
     /**
