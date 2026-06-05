@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 
+use function is_string;
 use function preg_replace;
 
 final class IriTemplatesService
@@ -52,12 +53,16 @@ final class IriTemplatesService
                     /** @var string $operationName */
                     $operationName = $operation->getName();
                     $route = $routeCollection->get($operationName);
+                    $shortName = $resourceMetadata->getShortName();
 
-                    if (!$route instanceof Route) {
+                    if (
+                        !$route instanceof Route
+                        || !is_string($shortName)
+                    ) {
                         continue;
                     }
 
-                    $iriTemplates[$resourceMetadata->getShortName()] = $this->sanitizePath($route->getPath());
+                    $iriTemplates[$shortName] = $this->sanitizePath($route->getPath());
 
                     break;
                 }
