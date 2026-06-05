@@ -58,38 +58,69 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
     /** @param ArrayObject<string, mixed> $definitions */
     private function ensureJsonldInputPropertyForInputSchemas(string $reference, string $schemaPrefix, ArrayObject $definitions): void
     {
-        $definitionName = str_replace($schemaPrefix, '', $reference);
-
-        foreach ($definitions[$definitionName]['properties'] ?? [] as $property) {
-            if (isset($property['type'])) {
+        foreach ($definitions[$this->stripSchemaPrefix($schemaPrefix, $reference)]['properties'] ?? [] as $property) {
+            if (
+                isset($property['type'])
+                && $property['type'] !== 'array'
+            ) {
                 continue;
             }
 
             if (isset($property['$ref'])) {
                 $this->addJsonldInputProperty(
+                    $this->stripSchemaPrefix(
+                        $schemaPrefix,
+                        $property['$ref'],
+                    ),
                     $definitions,
-                    $schemaPrefix,
-                    $property['$ref'],
                 );
 
-                break;
+                continue;
+            }
+
+            if (isset($property['items']['$ref'])) {
+                $this->addJsonldInputProperty(
+                    $this->stripSchemaPrefix(
+                        $schemaPrefix,
+                        $property['items']['$ref'],
+                    ),
+                    $definitions,
+                );
+
+                continue;
             }
 
             foreach (self::SCHEMA_LOGICAL_OPERATORS as $operator) {
-                if (!isset($property[$operator])) {
-                    continue;
+                if (isset($property[$operator])) {
+                    foreach ($property[$operator] as $subschema) {
+                        if (!isset($subschema['$ref'])) {
+                            continue;
+                        }
+
+                        $this->addJsonldInputProperty(
+                            $this->stripSchemaPrefix(
+                                $schemaPrefix,
+                                $subschema['$ref'],
+                            ),
+                            $definitions,
+                        );
+                    }
                 }
 
-                foreach ($property[$operator] as $subschema) {
-                    if (!isset($subschema['$ref'])) {
-                        continue;
-                    }
+                if (isset($property['items'][$operator])) {
+                    foreach ($property['items'][$operator] as $subschema) {
+                        if (!isset($subschema['$ref'])) {
+                            continue;
+                        }
 
-                    $this->addJsonldInputProperty(
-                        $definitions,
-                        $schemaPrefix,
-                        $subschema['$ref'],
-                    );
+                        $this->addJsonldInputProperty(
+                            $this->stripSchemaPrefix(
+                                $schemaPrefix,
+                                $subschema['$ref'],
+                            ),
+                            $definitions,
+                        );
+                    }
                 }
             }
         }
@@ -97,13 +128,15 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
 
     /** @param ArrayObject<string, mixed> $definitions */
     private function addJsonldInputProperty(
+        string $definitionKey,
         ArrayObject $definitions,
-        string $schemaPrefix,
-        string $ref,
     ): void {
-        $definitionKey = str_replace($schemaPrefix, '', $ref);
-
         $definitions[$definitionKey]['properties'][self::JSONLD_INPUT_OBJECT_PROPERTY_NAME]
             ??= self::JSONLD_INPUT_OBJECT_PROPERTY;
+    }
+
+    private function stripSchemaPrefix(string $schemaPrefix, string $reference): string
+    {
+        return str_replace($schemaPrefix, '', $reference);
     }
 }
