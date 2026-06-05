@@ -58,34 +58,40 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
     /** @param ArrayObject<string, mixed> $definitions */
     private function ensureJsonldInputPropertyForInputSchemas(string $reference, string $schemaPrefix, ArrayObject $definitions): void
     {
-        foreach ($definitions[$this->stripSchemaPrefix($schemaPrefix, $reference)]['properties'] ?? [] as $property) {
+        foreach (
+            $this->collectReferences(
+                $definitions[
+                    $this->stripSchemaPrefix($schemaPrefix, $reference)
+                ]['properties'] ?? [],
+                $schemaPrefix,
+            ) as $definitionKey) {
+            $this->addJsonldInputProperty($definitionKey, $definitions);
+        }
+    }
+
+    /**
+     * @param array<string, ArrayObject<string, mixed>> $properties
+     *
+     * @return iterable<int, string>
+     */
+    private function collectReferences(array $properties, string $schemaPrefix): iterable
+    {
+        foreach ($properties as $property) {
             if (
                 isset($property['type'])
-                && $property['type'] !== 'array'
+                && !isset($property['items'])
             ) {
                 continue;
             }
 
             if (isset($property['$ref'])) {
-                $this->addJsonldInputProperty(
-                    $this->stripSchemaPrefix(
-                        $schemaPrefix,
-                        $property['$ref'],
-                    ),
-                    $definitions,
-                );
+                yield $this->stripSchemaPrefix($schemaPrefix, $property['$ref']);
 
                 continue;
             }
 
             if (isset($property['items']['$ref'])) {
-                $this->addJsonldInputProperty(
-                    $this->stripSchemaPrefix(
-                        $schemaPrefix,
-                        $property['items']['$ref'],
-                    ),
-                    $definitions,
-                );
+                yield $this->stripSchemaPrefix($schemaPrefix, $property['items']['$ref']);
 
                 continue;
             }
@@ -97,13 +103,7 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
                             continue;
                         }
 
-                        $this->addJsonldInputProperty(
-                            $this->stripSchemaPrefix(
-                                $schemaPrefix,
-                                $subschema['$ref'],
-                            ),
-                            $definitions,
-                        );
+                        yield $this->stripSchemaPrefix($schemaPrefix, $subschema['$ref']);
                     }
                 }
 
@@ -113,13 +113,7 @@ final class SchemaFactoryDecorator implements SchemaFactoryInterface
                             continue;
                         }
 
-                        $this->addJsonldInputProperty(
-                            $this->stripSchemaPrefix(
-                                $schemaPrefix,
-                                $subschema['$ref'],
-                            ),
-                            $definitions,
-                        );
+                        yield $this->stripSchemaPrefix($schemaPrefix, $subschema['$ref']);
                     }
                 }
             }
